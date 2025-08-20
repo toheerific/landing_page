@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cool 3D Landing Page</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      background: black;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 60px;
+      position: absolute;
+      width: 100%;
+      top: 0;
+      left: 0;
+      box-sizing: border-box;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    nav a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: white;
+      font-weight: 500;
+    }
+
+    section.hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      z-index: 10;
+      position: relative;
+    }
+
+    section.hero h2 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, #4facfe, #00f2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    section.hero p {
+      max-width: 600px;
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      color: #ddd;
+    }
+
+    button {
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: linear-gradient(90deg, #4facfe, #00f2fe);
+      color: white;
+      transition: transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg"></canvas>
+
+  <header>
+    <h1>MyCompany</h1>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Services</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>Welcome to MyCompany 🚀</h2>
+    <p>We create stunning digital experiences with cutting-edge technology and design.</p>
+    <button>Get Started</button>
+  </section>
+
+  <!-- Three.js -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+  <script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#bg'), antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    // Geometry: spinning torus
+    const geometry = new THREE.TorusKnotGeometry(10, 3, 200, 32);
+    const material = new THREE.MeshStandardMaterial({ color: 0x4facfe, metalness: 0.8, roughness: 0.2 });
+    const torusKnot = new THREE.Mesh(geometry, material);
+    scene.add(torusKnot);
+
+    // Lights
+    const pointLight = new THREE.PointLight(0xffffff, 1);
+    pointLight.position.set(20, 20, 20);
+    scene.add(pointLight);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+
+    // Stars
+    function addStar() {
+      const geo = new THREE.SphereGeometry(0.25, 24, 24);
+      const mat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+      const star = new THREE.Mesh(geo, mat);
+
+      const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(200));
+      star.position.set(x, y, z);
+      scene.add(star);
+    }
+    Array(400).fill().forEach(addStar);
+
+    camera.position.z = 50;
+
+    // Animation
+    function animate() {
+      requestAnimationFrame(animate);
+
+      torusKnot.rotation.x += 0.01;
+      torusKnot.rotation.y += 0.005;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Responsive
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
